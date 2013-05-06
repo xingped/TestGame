@@ -31,8 +31,8 @@ bool Graphics::newShader(std::string name)
 	
 	ShaderProgram[name]->createProgram();
 	// Create and load shaders
-	if (vertShader->loadShader(name+".vert", GL_VERTEX_SHADER) == 1) return(1);
-	if (fragShader->loadShader(name+".frag", GL_FRAGMENT_SHADER) == 1) return(1);
+	if (vertShader->loadShader("shaders/"+name+".vert", GL_VERTEX_SHADER) == 1) return(1);
+	if (fragShader->loadShader("shaders/"+name+".frag", GL_FRAGMENT_SHADER) == 1) return(1);
 	
 	// Attach shaders to shader program
 	ShaderProgram[name]->addShaderToProgram(vertShader);

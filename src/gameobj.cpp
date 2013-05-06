@@ -137,6 +137,11 @@ void GameObj::update()
 
 void GameObj::draw(Graphics *graphics)
 {
+	// Check ARB_framebuffer_object spec for drawing to texture before using the next program
+	// Check EXT_transform_feedback spec for passing output of one shader program into the next
+	
+	// Draw with red shader
+	graphics->ShaderProgram["red"]->useProgram(true);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glEnableVertexAttribArray(0);
@@ -146,6 +151,20 @@ void GameObj::draw(Graphics *graphics)
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
 	glDisableVertexAttribArray(0);
+	graphics->ShaderProgram["red"]->useProgram(false);
+	
+	// Draw with green shader
+	graphics->ShaderProgram["green"]->useProgram(true);
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	
+	glDisableVertexAttribArray(0);
+	graphics->ShaderProgram["green"]->useProgram(false);
 	
 	return;
 }
