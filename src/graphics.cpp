@@ -47,6 +47,21 @@ bool Graphics::newShader(std::string name)
 	return(0);
 }
 
+bool Graphics::newUniform(std::string pName, std::string uName)
+{
+	ShaderProgram[pName]->useProgram(true);
+	Uniforms[pName+"_"+uName] = glGetUniformLocation(ShaderProgram[pName]->getProgramID(), uName.c_str());
+	ShaderProgram[pName]->useProgram(false);
+	
+	if(Uniforms[pName+"_"+uName] == 0xFFFFFFFF)
+	{
+		std::cout << "Unable to find Uniform " << uName << " in program " << pName << std::endl;
+		return(1);
+	}
+	else
+		return(0);
+}
+
 void Graphics::terminate()
 {
 	for(std::map<std::string, CShaderProgram*>::const_iterator i = ShaderProgram.begin(); i != ShaderProgram.end(); i++)

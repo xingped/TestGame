@@ -7,54 +7,54 @@ float vertPos[] = {
 	-1, 1, 1,
 	1, 1, 1,
 	
-	1, 1, 1,
-	1, 1, -1,
 	-1, 1, -1,
+	1, 1, -1,
+	1, 1, 1,
 	
 	// bot
 	-1, -1, 1,
 	-1, -1, -1,
 	1, -1, -1,
 	
-	1, -1, -1,
-	1, -1, 1,
 	-1, -1, 1,
+	1, -1, 1,
+	1, -1, -1,
 	
 	// front
 	-1, -1, -1,
 	-1, 1, -1,
 	1, 1, -1,
 	
-	1, 1, -1,
-	1, -1, -1,
 	-1, -1, -1,
+	1, -1, -1,
+	1, 1, -1,
 	
 	// front right
 	1, -1, -1,
 	1, 1, -1,
 	1, 1, 1,
 	
-	1, 1, 1,
-	1, -1, 1,
 	1, -1, -1,
+	1, -1, 1,
+	1, 1, 1,
 	
 	// back
 	1, -1, 1,
 	1, 1, 1,
 	-1, 1, 1,
 	
-	-1, 1, 1,
-	-1, -1, 1,
 	1, -1, 1,
+	-1, -1, 1,
+	-1, 1, 1,
 	
 	// front left
 	-1, -1, 1,
 	-1, 1, 1,
 	-1, 1, -1,
 	
-	-1, 1, -1,
+	-1, -1, 1,
 	-1, -1, -1,
-	-1, -1, 1
+	-1, 1, -1
 };
 
 float texCoord[] = {
@@ -118,7 +118,7 @@ void GameObj::create()
 {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertTri), vertTri, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertPos), vertPos, GL_STATIC_DRAW);
 	
 	return;
 }
@@ -148,10 +148,7 @@ void GameObj::draw(Graphics *graphics)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	if(graphics->mode == GL_TRIANGLES)
-		glDrawArrays(graphics->mode, 0, 3);
-	else if(graphics->mode == GL_LINES)
-		glDrawArrays(graphics->mode, 0, 2);
+	glDrawArrays(graphics->mode, 0, 36);
 	
 	glDisableVertexAttribArray(0);
 	graphics->ShaderProgram["std"]->useProgram(false);

@@ -41,6 +41,8 @@ void init()
 	graphics = new Graphics();
 	if(graphics->newShader("std") == 1) Shut_Down(1);
 	
+	if(graphics->newUniform("std", "inColor") == 1) Shut_Down(1);
+	
 	cube = new GameObj();
 	cube->create();
 	
@@ -56,6 +58,10 @@ void setup_tweak()
     bar = TwNewBar("TweakBar");
     TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with GLFW and OpenGL.' "); // Message added to the help bar.
 	
+    // Add 'speed' to 'bar': it is a modifable (RW) variable of type TW_TYPE_DOUBLE. Its key shortcuts are [s] and [S].
+    //TwAddVarRW(bar, "speed", TW_TYPE_DOUBLE, &speed, 
+    //           " label='Rot speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
+			   
 	// Add 'wire' to 'bar': it is a modifable variable of type TW_TYPE_BOOL32 (32 bits boolean). Its key shortcut is [w].
     TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire, 
                " label='Wireframe mode' key=w help='Toggle wireframe display mode.' ");
@@ -87,14 +93,16 @@ void loop()
 {
 	int running = GL_TRUE;
 
-	time = glfwGetTime();
-	
 	while(running)
 	{
+		time = glfwGetTime();
 		dt = glfwGetTime() - time;
 		
 		KeyHandler();
 		
+		graphics->ShaderProgram["std"]->useProgram(true);
+		glUniform3f(graphics->Uniforms["std_inColor"], triColor[0], triColor[1], triColor[2]);
+		graphics->ShaderProgram["std"]->useProgram(false);
 		
 		cube->draw(graphics);
 		

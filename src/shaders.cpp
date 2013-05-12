@@ -138,6 +138,20 @@ void CShaderProgram::createProgram()
 
 /*-----------------------------------------------
 
+Name:		getProgramID
+
+Params:	none
+
+Result:	Returns ID of a generated program.
+
+-----------------------------------------------*/
+unsigned int CShaderProgram::getProgramID()
+{
+	return uiProgram;
+}
+
+/*-----------------------------------------------
+
 Name:		addShaderToProgram
 
 Params:	sShader - shader to add
