@@ -4,17 +4,24 @@
 #include "gameobj.hpp"
 #include <GL/glfw.h>
 
+#include "AntTweakBar.h"
+
 void init();
 void setup_glfw();
 void loop();
 void KeyHandler();
 void GLFWCALL handleResize(int width, int height);
 void Shut_Down(int return_code);
+void setup_tweak();
 
 Graphics *graphics;
 GameObj *cube;
 
+TwBar *bar;
 
+int wire = 0;
+double time = 0, dt;
+float triColor[] = {0.1f, 0.2f, 0.4f};
 
 int main(void)
 {
@@ -28,15 +35,50 @@ int main(void)
 void init()
 {
 	setup_glfw();
+	
+	setup_tweak();
 
 	graphics = new Graphics();
-	if(graphics->newShader("red") == 1) Shut_Down(1);
-	if(graphics->newShader("green") == 1) Shut_Down(1);
+	if(graphics->newShader("std") == 1) Shut_Down(1);
 	
 	cube = new GameObj();
 	cube->create();
 	
-	graphics->ShaderProgram["red"]->useProgram(true);
+	return;
+}
+
+void setup_tweak()
+{
+	//unsigned char triColor[] = {255, 0, 0, 128};
+	TwInit(TW_OPENGL, NULL);
+	
+	// Create a tweak bar
+    bar = TwNewBar("TweakBar");
+    TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with GLFW and OpenGL.' "); // Message added to the help bar.
+	
+	// Add 'wire' to 'bar': it is a modifable variable of type TW_TYPE_BOOL32 (32 bits boolean). Its key shortcut is [w].
+    TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire, 
+               " label='Wireframe mode' key=w help='Toggle wireframe display mode.' ");
+
+    // Add 'time' to 'bar': it is a read-only (RO) variable of type TW_TYPE_DOUBLE, with 1 precision digit
+    TwAddVarRO(bar, "time", TW_TYPE_DOUBLE, &time, " label='Time' precision=1 help='Time (in seconds).' ");         
+
+    // Add 'bgColor' to 'bar': it is a modifable variable of type TW_TYPE_COLOR3F (3 floats color)
+    TwAddVarRW(bar, "triColor", TW_TYPE_COLOR3F, &triColor, " label='Triangle color' ");
+	
+	// Set GLFW event callbacks
+    // - Redirect window size changes to the callback function WindowSizeCB
+    glfwSetWindowSizeCallback(handleResize);
+    // - Directly redirect GLFW mouse button events to AntTweakBar
+    glfwSetMouseButtonCallback((GLFWmousebuttonfun)TwEventMouseButtonGLFW);
+    // - Directly redirect GLFW mouse position events to AntTweakBar
+    glfwSetMousePosCallback((GLFWmouseposfun)TwEventMousePosGLFW);
+    // - Directly redirect GLFW mouse wheel events to AntTweakBar
+    glfwSetMouseWheelCallback((GLFWmousewheelfun)TwEventMouseWheelGLFW);
+    // - Directly redirect GLFW key events to AntTweakBar
+    glfwSetKeyCallback((GLFWkeyfun)TwEventKeyGLFW);
+    // - Directly redirect GLFW char events to AntTweakBar
+    glfwSetCharCallback((GLFWcharfun)TwEventCharGLFW);
 	
 	return;
 }
@@ -45,11 +87,21 @@ void loop()
 {
 	int running = GL_TRUE;
 
+	time = glfwGetTime();
+	
 	while(running)
 	{
+		dt = glfwGetTime() - time;
+		
 		KeyHandler();
+		
+		
 		cube->draw(graphics);
 		
+		// Draw tweak bars
+		TwDraw();
+		
+		// Present frame buffer
 		glfwSwapBuffers();
 		
 		running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
@@ -100,11 +152,17 @@ void KeyHandler()
 	// escape to quit
 	if (glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
 		Shut_Down(0);
+		
+	if (wire == 1)
+		graphics->mode = GL_LINES;
+	else
+		graphics->mode = GL_TRIANGLES;
 }
 
 void GLFWCALL handleResize(int width, int height)
 {
 	glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+	TwWindowSize(width, height);
 	
 	return;
 }
@@ -112,6 +170,7 @@ void GLFWCALL handleResize(int width, int height)
 void Shut_Down(int return_code)
 {
 	graphics->terminate();
+	TwTerminate();
     glfwTerminate();
 	
 	char test;

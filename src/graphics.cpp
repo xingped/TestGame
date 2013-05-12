@@ -18,7 +18,7 @@ int Graphics::init_glew()
 		return(1);
 	}
 	
-	std::cout << "Using GLEW: " << glewGetString(GLEW_VERSION) << std::endl;
+	mode = GL_TRIANGLES;
 	
 	return(0);
 }

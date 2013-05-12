@@ -8,6 +8,7 @@ class Graphics
 {
 	public:
 		std::map<std::string, CShaderProgram*> ShaderProgram;
+		GLenum mode;
 	
 		Graphics();
 		int init_glew();
